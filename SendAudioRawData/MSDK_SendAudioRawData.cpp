@@ -34,6 +34,8 @@ wstring sdk_jwt;
 UINT64 meeting_number;
 wstring passcode;
 string video_source = "";
+wstring zoom_join_url;
+
 constexpr auto DEFAULT_VIDEO_SOURCE = "Big_Buck_Bunny_1080_10s_1MB.mp4";
 constexpr auto CONFIG_FILE = "config.json";
 
@@ -220,6 +222,14 @@ void LoadConfig() {
         video_source = DEFAULT_VIDEO_SOURCE;
         printf("No video source provided, use the default video source: %s.\n", video_source.c_str());
     }
+
+    if (!isConfigFileOpened || config["zoom_join_url"].empty() || config["zoom_join_url"].asString() == "") {
+        zoom_join_url = QuestionInput("zoom_join_url: ");
+    }
+    else {
+        zoom_join_url = StringToWString(config["zoom_join_url"].asString());
+        printf("Found \"zoom_join_url\" from %s: \"%s\"\n", CONFIG_FILE, WStringToString(zoom_join_url).c_str());
+    }
  
 }
 
@@ -229,7 +239,6 @@ void LoadConfig() {
 void JoinMeeting()
 {
     SDKError err(SDKError::SDKERR_SUCCESS);
-
 
     //try to create the meetingservice object, this object will be used to join the meeting
     if ((err = CreateMeetingService(&meetingService)) != SDKError::SDKERR_SUCCESS) ShowErrorAndExit(err);
@@ -263,38 +272,8 @@ void JoinMeeting()
     meetingService->SetEvent(new MeetingServiceEventListener(&onMeetingJoined, &onMeetingEndsQuitApp, &onInMeeting));
     
     //join meeting
-    if ((err = meetingService->Join(joinMeetingParam)) != SDKError::SDKERR_SUCCESS) ShowErrorAndExit(err);
+    if ((err = meetingService->HandleZoomWebUriProtocolAction(zoom_join_url.c_str())) != SDKError::SDKERR_SUCCESS) ShowErrorAndExit(err);
     else std::cout << "Joining Meeting..." << std::endl;
-
-
-    //ZOOM_SDK_NAMESPACE::StartParam startMeetingParam;
-    //StartParam4WithoutLogin startMeetingWithoutLoginParam;
-    //startMeetingParam.userType = ZOOM_SDK_NAMESPACE::SDK_UT_WITHOUT_LOGIN;
-    //startMeetingWithoutLoginParam.meetingNumber = meeting_number;
-    ////startMeetingWithoutLoginParam.psw = passcode.c_str(); 
-    //startMeetingWithoutLoginParam.zoomuserType = ZoomUserType_APIUSER;
-    //startMeetingWithoutLoginParam.userID = L"tanchunsiong.sg@fakegmail.com";
-    //startMeetingWithoutLoginParam.userName = L"RawDataSender(VirtualCam)";
-    //startMeetingWithoutLoginParam.userZAK = L"eyJ0eXAiOiJKV1QiLCJzdiI6IjAwMDAwMSIsInptX3NrbSI6InptX28ybSIsImFsZyI6IkhTMjU2In0.eyJhdWQiOiJjbGllbnRzbSIsInVpZCI6Ijc0N0tEcXlFUnZ1Z3Vfc0V0dFVHSlEiLCJpc3MiOiJ3ZWIiLCJzayI6IjAiLCJzdHkiOjk5LCJ3Y2QiOiJ1czAyIiwiY2x0IjowLCJleHAiOjE2Nzk1NTk0NDQsImlhdCI6MTY3OTU1MjI0NCwiYWlkIjoiN1MwMXlMSUpRZ1NoNGd4cmplY0JoQSIsImNpZCI6IiJ9.vq5RQcCqe4lAmWtEw3OXJrpAbY3N-FloKGVTS0zGHDw";
-    ////startMeetingWithoutLoginParam.join_token = NULL;
-    //startMeetingWithoutLoginParam.vanityID = NULL;
-    //startMeetingWithoutLoginParam.customer_key = NULL;
-    ////startMeetingWithoutLoginParam.webinarToken = NULL;
-    ////startMeetingWithoutLoginParam.app_privilege_token = NULL;
-    //startMeetingWithoutLoginParam.hDirectShareAppWnd = NULL;
-    //startMeetingWithoutLoginParam.isAudioOff = true;
-    //startMeetingWithoutLoginParam.isVideoOff = true;
-    //startMeetingWithoutLoginParam.isDirectShareDesktop = false;
-
-    //startMeetingParam.param.withoutloginStart = startMeetingWithoutLoginParam;
-
-
-    ////start meeting
-    //if ((err = meetingService->Start(startMeetingParam)) != SDKError::SDKERR_SUCCESS) ShowErrorAndExit(err);
-    //else std::cout << "Joining Meeting..." << std::endl;
-
-
-
 }
 /// <summary>
 /// Authorize SDK with JWT Token

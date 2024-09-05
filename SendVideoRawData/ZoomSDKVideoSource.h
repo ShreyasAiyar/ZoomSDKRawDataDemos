@@ -15,6 +15,7 @@ class ZoomSDKVideoSource :
 private:
 	IZoomSDKVideoSender* video_sender_;
 	std::string video_source_;
+	void (*m_onVideoSauceInit)();
 protected:
 	virtual	void onInitialize(IZoomSDKVideoSender* sender, IList<VideoSourceCapability >* support_cap_list, VideoSourceCapability& suggest_cap);
 	virtual void onPropertyChange(IList<VideoSourceCapability >* support_cap_list, VideoSourceCapability suggest_cap);
@@ -22,6 +23,6 @@ protected:
 	virtual void onStopSend();
 	virtual void onUninitialized();
 public:
-	ZoomSDKVideoSource(std::string video_source);
+	ZoomSDKVideoSource(std::string video_source, void (*onVideoSauceInit)());
 };
 

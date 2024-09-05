@@ -68,6 +68,7 @@ void ZoomSDKVideoSource::onInitialize(IZoomSDKVideoSender* sender, IList<VideoSo
 {
     std::cout << "ZoomSDKVideoSource::onInitialize" << endl;
     video_sender_ = sender;
+    m_onVideoSauceInit();
 }
 
 void ZoomSDKVideoSource::onPropertyChange(IList<VideoSourceCapability>* support_cap_list, VideoSourceCapability suggest_cap)
@@ -105,8 +106,9 @@ void ZoomSDKVideoSource::onUninitialized()
     video_sender_ = nullptr;
 }
 
-ZoomSDKVideoSource::ZoomSDKVideoSource(string video_source)
+ZoomSDKVideoSource::ZoomSDKVideoSource(string video_source, void (*onVideoSauceInit)())
 {
     video_source_ = video_source;
+    m_onVideoSauceInit = onVideoSauceInit;
 }
 

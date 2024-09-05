@@ -6,6 +6,7 @@ config.json
 sdk/CHANGELOG.md
 sdk/OSS-LICENSE.pdf
 x64/
+vcpkg_installed/
 x86/
 .vs/
 

@@ -35,5 +35,7 @@ public:
 	/// \brief Callback event for the AI Companion active status changed. 
 /// \param active Specify whether the AI Companion active or not.
 	virtual void onAICompanionActiveChangeNotice(bool bActive);
+
+	virtual void onMeetingTopicChanged(const zchar_t* sTopic);
 };
 

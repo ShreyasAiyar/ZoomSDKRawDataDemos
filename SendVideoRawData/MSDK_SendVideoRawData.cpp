@@ -12,6 +12,7 @@
 #include "AuthServiceEventListener.h"
 #include "NetworkConnectionHandler.h"
 #include "MeetingServiceEventListener.h"
+#include "meeting_service_components/meeting_video_interface.h"
 #include <fstream>
 #include "json\json.h"
 #include <sstream>
@@ -42,11 +43,20 @@ constexpr auto CONFIG_FILE = "config.json";
 bool isJWTWebService = false;
 
 
+
+void onVideoSauceInit() {
+	std::cout << "Unmuting video" << std::endl;
+	auto err = meetingService->GetMeetingVideoController()->UnmuteVideo();
+	if (err != SDKERR_SUCCESS) {
+		std::cout << "Error unmuting video " << err << std::endl;
+	}
+}
+
 //dreamtcs TODO, video only start sending when video is "turned on" or "unmuted"
 void attemptToStartRawVideoSending() {
 
 
-	virtual_camera_video_source = new ZoomSDKVideoSource(video_source);
+	virtual_camera_video_source = new ZoomSDKVideoSource(video_source, &onVideoSauceInit);
 	IZoomSDKVideoSourceHelper*	p_videoSourceHelper = GetRawdataVideoSourceHelper();
 
 	if (p_videoSourceHelper) {
@@ -55,15 +65,11 @@ void attemptToStartRawVideoSending() {
 			printf("attemptToStartRawVideoSending(): Failed to set external video source, error code: %d\n", err);
 		}
 		else {
-		
 		}
 	}
 	else {
 		printf("attemptToStartRawVideoSending(): Failed to get video source helper\n");
 	}
-	
-
-
 }
 
 
@@ -267,7 +273,7 @@ void JoinMeeting()
 	meetingService->SetEvent(new MeetingServiceEventListener(&onMeetingJoined, &onMeetingEndsQuitApp, &onInMeeting));
 
 	//join meeting
-	if ((err = meetingService->Join(joinMeetingParam)) != SDKError::SDKERR_SUCCESS) ShowErrorAndExit(err);
+	if ((err = meetingService->HandleZoomWebUriProtocolAction(L"https://us02web.zoom.us/j/4152987996")) != SDKError::SDKERR_SUCCESS) ShowErrorAndExit(err);
 	else std::cout << "Joining Meeting..." << std::endl;
 
 

@@ -49,3 +49,7 @@ void MeetingServiceEventListener::onAICompanionActiveChangeNotice(bool bActive)
 {
 }
 
+void MeetingServiceEventListener::onMeetingTopicChanged(const zchar_t* sTopic)
+{
+
+}
